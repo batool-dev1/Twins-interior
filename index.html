@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Twins Interior Design — Interior Architecture in Amman, Jordan</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    html { -webkit-font-smoothing: antialiased; }
+    body { background:#F8F7F4; color:#1A1A1A; font-family:Inter,system-ui,sans-serif; }
+    ::selection { background:#B89772; color:#fff; }
+
+    .reveal { opacity:0; transform:translateY(26px); transition:all .9s cubic-bezier(.2,.7,.2,1); }
+    .reveal.in { opacity:1; transform:none; }
+    .d1 { transition-delay:.12s; } .d2 { transition-delay:.24s; } .d3 { transition-delay:.36s; }
+
+    .glass { background:rgba(248,247,244,.85); backdrop-filter:blur(16px); border-bottom:1px solid rgba(184,151,114,.28); }
+    .eyebrow { display:flex; align-items:center; gap:.75rem; font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:#98774F; }
+    .eyebrow::before { content:''; width:2.5rem; height:1px; background:#B89772; }
+
+    /* Projects: flowing editorial rows, 3-image mosaic per project */
+    .projects-list { margin-top:3.5rem; }
+    .project { padding:3rem 0; border-top:1px solid rgba(184,151,114,.3); }
+    .project:first-child { border-top:0; padding-top:0; }
+    .project.is-hidden { display:none; }
+    .project.fade-in { animation:rowIn .9s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes rowIn { from { opacity:0; transform:translateY(28px);} to { opacity:1; transform:none; } }
+    .project-grid { display:grid; gap:2rem; }
+    @media (min-width:1024px){
+      .project-grid { grid-template-columns:repeat(12,minmax(0,1fr)); gap:3.5rem; align-items:center; }
+      .project-media { grid-column:span 8; }
+      .project-info { grid-column:span 4; }
+      .project.flip .project-media { order:2; }
+    }
+    .num { font-size:4.5rem; line-height:1; color:#B89772; opacity:.55; font-weight:500; }
+
+    .mosaic { display:grid; grid-template-columns:1.7fr 1fr; grid-template-rows:1fr 1fr; gap:10px; aspect-ratio:16/11; }
+    .project.flip .mosaic { grid-template-columns:1fr 1.7fr; }
+    .tile { position:relative; display:block; padding:0; overflow:hidden; background:#EEEAE3; border-radius:.9rem; cursor:zoom-in; min-height:0; box-shadow:0 18px 40px -26px rgba(26,26,26,.35); }
+    .tile-main { grid-column:1; grid-row:1 / span 2; border-top-left-radius:2rem; }
+    .tile-a { grid-column:2; grid-row:1; border-top-right-radius:.35rem; }
+    .tile-b { grid-column:2; grid-row:2; border-bottom-right-radius:2rem; }
+    .project.flip .tile-main { grid-column:2; border-top-left-radius:.9rem; border-top-right-radius:2rem; }
+    .project.flip .tile-a { grid-column:1; border-top-right-radius:.9rem; border-top-left-radius:.35rem; }
+    .project.flip .tile-b { grid-column:1; border-bottom-right-radius:.9rem; border-bottom-left-radius:2rem; }
+    .tile img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.3s cubic-bezier(.2,.7,.2,1), filter .6s ease; }
+    .tile:hover img, .tile:focus-visible img { transform:scale(1.06); }
+    .mosaic:hover .tile:not(:hover) img { filter:brightness(.86) saturate(.9); }
+    .tile::after { content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(26,26,26,.38), transparent 45%); opacity:0; transition:opacity .5s ease; }
+    .tile:hover::after, .tile:focus-visible::after { opacity:1; }
+    .zoom { position:absolute; right:.8rem; bottom:.8rem; z-index:2; width:2.4rem; height:2.4rem; border-radius:999px; background:rgba(248,247,244,.92); color:#1A1A1A; display:grid; place-items:center; opacity:0; transform:translateY(8px) scale(.9); transition:all .5s cubic-bezier(.2,.7,.2,1); }
+    .zoom svg { width:1.1rem; height:1.1rem; }
+    .tile:hover .zoom, .tile:focus-visible .zoom { opacity:1; transform:none; }
+    @media (hover:none){ .zoom { opacity:1; transform:none; width:2rem; height:2rem; } }
+    .badge { position:absolute; left:.9rem; top:.9rem; z-index:2; display:inline-flex; align-items:center; gap:.45rem; padding:.35rem .75rem; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#1A1A1A; background:rgba(248,247,244,.85); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-radius:999px; }
+    .badge i { width:6px; height:6px; border-radius:50%; background:#B89772; }
+    .project.flip .badge { left:auto; right:.9rem; }
+
+    .open-gallery { margin-top:1.75rem; display:inline-flex; align-items:center; gap:.75rem; font-size:12px; letter-spacing:.2em; text-transform:uppercase; padding-bottom:.4rem; border-bottom:1px solid #B89772; transition:gap .4s cubic-bezier(.2,.7,.2,1), color .3s; }
+    .open-gallery svg { width:1rem; height:1rem; }
+    .open-gallery:hover { gap:1.2rem; color:#98774F; }
+
+    /* Lightbox */
+    dialog.lb { border:0; padding:0; margin:0; width:100vw; height:100dvh; max-width:none; max-height:none; background:rgba(20,20,20,.95); color:#F8F7F4; }
+    dialog.lb[open] { display:flex; flex-direction:column; animation:lbIn .45s cubic-bezier(.2,.7,.2,1) both; }
+    dialog.lb::backdrop { background:rgba(20,20,20,.95); }
+    @keyframes lbIn { from { opacity:0; } to { opacity:1; } }
+    .lb-stage { position:relative; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:4.5rem 1rem 1rem; }
+    #lb-img { max-width:100%; max-height:100%; object-fit:contain; border-radius:.5rem; box-shadow:0 30px 80px -30px rgba(0,0,0,.7); transition:opacity .35s ease, transform .55s cubic-bezier(.2,.7,.2,1); user-select:none; -webkit-user-drag:none; }
+    #lb-img.out { opacity:0; transform:translateX(var(--dx,0px)) scale(.985); }
+    .lb-btn { position:absolute; z-index:3; width:3rem; height:3rem; border-radius:999px; background:rgba(248,247,244,.12); color:#F8F7F4; display:grid; place-items:center; border:1px solid rgba(248,247,244,.25); transition:background .3s, transform .3s; }
+    .lb-btn:hover { background:#B89772; border-color:#B89772; color:#1A1A1A; }
+    .lb-btn svg { width:1.2rem; height:1.2rem; }
+    #lb-close { top:1rem; right:1rem; }
+    #lb-prev { left:1rem; top:50%; margin-top:-1.5rem; }
+    #lb-next { right:1rem; top:50%; margin-top:-1.5rem; }
+    #lb-prev:hover { transform:translateX(-3px); } #lb-next:hover { transform:translateX(3px); }
+    .lb-bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.5rem 1.5rem; flex-wrap:wrap; }
+    .lb-thumbs { display:flex; gap:.5rem; }
+    .lb-thumb { width:4.25rem; height:3.2rem; border-radius:.4rem; overflow:hidden; opacity:.5; border:1.5px solid transparent; transition:all .4s ease; }
+    .lb-thumb img { width:100%; height:100%; object-fit:cover; }
+    .lb-thumb:hover { opacity:.85; }
+    .lb-thumb.active { opacity:1; border-color:#B89772; }
+    html.lb-open { overflow:hidden; }
+    @media (max-width:640px){ #lb-prev, #lb-next { top:auto; bottom:5.5rem; margin-top:0; } #lb-prev { left:1rem; } #lb-next { right:1rem; } }
+    @media (prefers-reduced-motion: reduce){ *,*::before,*::after { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
+
+    .filter-btn { font-size:12px; letter-spacing:.2em; text-transform:uppercase; padding:.8rem 1.6rem; border:1px solid rgba(184,151,114,.6); transition:all .4s ease; }
+    .filter-btn:hover { background:rgba(184,151,114,.14); }
+    .filter-btn.active { background:#1A1A1A; color:#F8F7F4; border-color:#1A1A1A; }
+
+    @keyframes marquee { from { transform:translateX(0);} to { transform:translateX(-50%);} }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="fixed top-0 inset-x-0 z-50">
+    <div class="glass">
+      <div class="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
+        <a href="#top" class="flex items-baseline gap-3">
+          <span class="font-serif text-2xl tracking-[.28em] font-semibold">TWINS</span>
+          <span class="hidden sm:block h-4 w-px bg-bronze/80"></span>
+          <span class="hidden sm:block text-[10px] uppercase tracking-[.32em] text-ink/60">Interior Architecture</span>
+        </a>
+        <nav class="hidden lg:flex items-center gap-10 text-[13px] tracking-wide">
+          <a href="#projects" class="hover:text-bronze transition">Projects</a>
+          <a href="#founders" class="hover:text-bronze transition">The Founders</a>
+          <a href="#philosophy" class="hover:text-bronze transition">Philosophy</a>
+          <a href="#contact" class="hover:text-bronze transition">Contact</a>
+        </nav>
+        <div>
+          <a href="#contact" class="hidden md:inline-flex border border-ink text-[12px] uppercase tracking-[.2em] px-6 py-3 hover:bg-ink hover:text-cream transition-colors duration-500">Book Consultation</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- HERO SECTION -->
+    <section id="top" class="relative pt-32 lg:pt-40 pb-20 lg:pb-32 overflow-hidden">
+      <div class="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-12 gap-14 items-center">
+        <div class="lg:col-span-6 relative z-10">
+          <p class="reveal eyebrow">Amman, Jordan · Prestige design, built to last</p>
+          <h1 class="reveal d1 mt-8 font-serif font-medium leading-[.98] text-[3.2rem] sm:text-6xl lg:text-[5.4rem]">
+            Two Minds. <span class="italic text-bronzeDeep">One</span> Harmonious Vision for Your Space.
+          </h1>
+          <p class="reveal d2 mt-8 max-w-md text-[15px] leading-[1.9] text-ink/70">
+            A designer and a builder, born together. Bader shapes the idea; Abdallah makes sure it is built exactly as imagined — one team from first sketch to the keys in your hand.
+          </p>
+          <div class="reveal d3 mt-10 flex flex-wrap items-center gap-6">
+            <a href="#projects" class="inline-flex items-center gap-3 bg-ink text-cream text-[12px] uppercase tracking-[.2em] px-8 py-4 hover:bg-bronzeDeep transition-colors duration-500">
+              View Projects
+            </a>
+          </div>
+          <dl class="reveal d3 mt-16 grid grid-cols-3 max-w-lg gap-6 border-t border-bronze/40 pt-8">
+            <div><dd class="font-serif text-4xl">350+</dd><dt class="text-[11px] uppercase tracking-[.18em] text-ink/55 mt-1">Projects</dt></div>
+            <div><dd class="font-serif text-4xl">10</dd><dt class="text-[11px] uppercase tracking-[.18em] text-ink/55 mt-1">Years</dt></div>
+            <div><dd class="font-serif text-4xl">5.0<span class="text-bronze text-2xl ml-1">★</span></dd><dt class="text-[11px] uppercase tracking-[.18em] text-ink/55 mt-1">Google rating</dt></div>
+          </dl>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="reveal relative max-w-xl lg:max-w-none lg:ml-auto">
+            <div class="absolute -top-5 -right-5 w-full h-full border border-bronze/60 hidden sm:block"></div>
+            <div class="relative overflow-hidden shadow-soft aspect-[4/5] sm:aspect-[5/6] bg-sand rounded-lg">
+              
+              <img id="hero-img" src="images/Home.jpg" alt="Twins Interior Design — lounge interior with travertine column, panoramic windows and layered seating" class="w-full h-full object-cover" />
+            </div>
+            <div class="absolute -bottom-8 -left-4 sm:-left-10 bg-cream px-6 py-5 shadow-card max-w-[250px] border border-bronze/30">
+              <p class="font-serif italic text-xl leading-snug">Design &amp; build, with daily quality control.</p>
+              <p class="mt-3 text-[10px] uppercase tracking-[.28em] text-bronzeDeep">Twins Interior Design</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="border-y border-bronze/30 bg-white/60 overflow-hidden">
+      <div class="flex whitespace-nowrap py-5 font-serif text-2xl italic text-ink/70" style="animation:marquee 40s linear infinite; width:max-content">
+        <span class="px-8">Concept</span><span class="text-bronze">✦</span><span class="px-8">Detailed Design</span><span class="text-bronze">✦</span><span class="px-8">Design &amp; Fit-Out</span><span class="text-bronze">✦</span><span class="px-8">Dedicated Supervision</span><span class="text-bronze">✦</span><span class="px-8">Turnkey &amp; FF&amp;E</span><span class="text-bronze">✦</span>
+        <span class="px-8">Concept</span><span class="text-bronze">✦</span><span class="px-8">Detailed Design</span><span class="text-bronze">✦</span><span class="px-8">Design &amp; Fit-Out</span><span class="text-bronze">✦</span><span class="px-8">Dedicated Supervision</span><span class="text-bronze">✦</span><span class="px-8">Turnkey &amp; FF&amp;E</span><span class="text-bronze">✦</span>
+      </div>
+    </div>
+
+    <!-- FOUNDERS SECTION -->
+    <section id="founders" class="py-24 lg:py-36 bg-white">
+      <div class="mx-auto max-w-7xl px-6 lg:px-10">
+        <div class="max-w-2xl">
+          <p class="reveal eyebrow">The Founders</p>
+          <h2 class="reveal d1 mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">Creative collaboration, <span class="italic text-bronzeDeep">in two parts.</span></h2>
+          <p class="reveal d2 mt-6 text-[15px] leading-[1.9] text-ink/70">Twin brothers with ten years of shared practice and 350+ successful projects. One designs, one builds — and because they think alike, nothing is lost between the drawing and the room.</p>
+        </div>
+
+        <div class="mt-16 grid md:grid-cols-2 gap-10 lg:gap-16">
+          <article class="reveal grid sm:grid-cols-5 gap-6 items-start">
+            <div class="sm:col-span-2 overflow-hidden aspect-[3/4] bg-sand rounded-lg">
+              <img src="images/bader designer.jpg" alt="Bader - Designer" class="w-full h-full object-cover" />
+            </div>
+            <div class="sm:col-span-3">
+              <p class="text-[11px] uppercase tracking-[.3em] text-bronzeDeep">Designer</p>
+              <h3 class="font-serif text-4xl mt-2">Bader</h3>
+              <p class="mt-5 text-sm leading-[1.9] text-ink/70">“I focus on transforming creative ideas into beautiful, modern, and practical designs. My goal is to create spaces that uniquely reflect each client’s personality.”</p>
+            </div>
+          </article>
+
+          <article class="reveal d2 grid sm:grid-cols-5 gap-6 items-start">
+            <div class="sm:col-span-2 overflow-hidden aspect-[3/4] bg-sand rounded-lg">
+              <img src="images/abdallah bulder.jpg" alt="Abdallah - Builder" class="w-full h-full object-cover" />
+            </div>
+            <div class="sm:col-span-3">
+              <p class="text-[11px] uppercase tracking-[.3em] text-bronzeDeep">Builder</p>
+              <h3 class="font-serif text-4xl mt-2">Abdallah</h3>
+              <p class="mt-5 text-sm leading-[1.9] text-ink/70">“My role is to ensure that the design achieves its purpose on-site, serving our clients' needs and providing them with practical solutions just as they envisioned.”</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO: 3 separate images per project (mosaic + lightbox gallery) -->
+    <section id="projects" class="py-24 lg:py-32 bg-cream">
+      <div class="mx-auto max-w-7xl px-6 lg:px-10">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
+          <div class="max-w-xl">
+            <p class="reveal eyebrow">Selected Work</p>
+            <h2 class="reveal d1 mt-6 font-serif text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">Residential &amp; commercial, <span class="italic text-bronzeDeep">finished well.</span></h2>
+          </div>
+          <div class="reveal d2 flex flex-wrap gap-2" role="group" aria-label="Filter projects">
+            <button type="button" data-filter="all" class="filter-btn active">All</button>
+            <button type="button" data-filter="commercial" class="filter-btn">Commercial</button>
+            <button type="button" data-filter="residential" class="filter-btn">Residential</button>
+          </div>
+        </div>
+
+        <div id="project-grid" class="projects-list">
+          <article class="project reveal" data-category="commercial">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open Sharrebha Restaurant gallery, image 1 of 3">
+              <img src="images/sharrebha-1.jpg" alt="Sharrebha Restaurant — dining room with woven pendant lights and floor-to-ceiling glazing" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open Sharrebha Restaurant gallery, image 2 of 3">
+              <img src="images/sharrebha-2.jpg" alt="Sharrebha Restaurant — arched niches, patterned tile and rattan chairs" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open Sharrebha Restaurant gallery, image 3 of 3">
+              <img src="images/sharrebha-3.jpg" alt="Sharrebha Restaurant — open kitchen counter and long communal tables" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">01</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Commercial · Restaurant</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">Sharrebha Restaurant</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">Woven lighting, arched niches and patterned tile with local character.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project reveal" data-category="commercial">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open Sherie Lounge gallery, image 1 of 3">
+              <img src="images/sherie-1.jpg" alt="Sherie Lounge — reception desk with brass shelving and marble floor" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open Sherie Lounge gallery, image 2 of 3">
+              <img src="images/sherie-2.jpg" alt="Sherie Lounge — waiting area with illuminated relief wall" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open Sherie Lounge gallery, image 3 of 3">
+              <img src="images/sherie-3.jpg" alt="Sherie Lounge — styling stations with arched mirrors and brass details" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">02</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Commercial · Lounge</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">Sherie Lounge</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">Arched mirrors, brass edging and veined marble for a calm salon.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project reveal" data-category="commercial">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open Sam7 Barber Shop gallery, image 1 of 3">
+              <img src="images/sam7-1.jpg" alt="Sam7 Barber Shop — barber chairs and backlit product shelving" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open Sam7 Barber Shop gallery, image 2 of 3">
+              <img src="images/sam7-2.jpg" alt="Sam7 Barber Shop — lounge area with leather seating and wall screen" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open Sam7 Barber Shop gallery, image 3 of 3">
+              <img src="images/sam7-3.jpg" alt="Sam7 Barber Shop — private chair with glowing LED ceiling outline" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">03</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Commercial · Barber Shop</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">Sam7 Barber Shop</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">Industrial ceilings, leather chairs and glowing LED outlines.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project reveal" data-category="commercial">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open 80z Coffee Shop gallery, image 1 of 3">
+              <img src="images/80z-1.jpg" alt="80z Coffee Shop — café floor with olive seating and street-facing glazing" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open 80z Coffee Shop gallery, image 2 of 3">
+              <img src="images/80z-2.jpg" alt="80z Coffee Shop — floating staircase and textured feature wall" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open 80z Coffee Shop gallery, image 3 of 3">
+              <img src="images/80z-3.jpg" alt="80z Coffee Shop — mezzanine with glass balustrade and planting" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">04</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Commercial · Café</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">80z Coffee Shop</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">A double-height café with suspended lighting and olive velvet seating.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project reveal" data-category="commercial">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open Naghma Podcast Studio gallery, image 1 of 3">
+              <img src="images/naghma-1.jpg" alt="Naghma Podcast Studio — lounge with fireplace and carved wall panel" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open Naghma Podcast Studio gallery, image 2 of 3">
+              <img src="images/naghma-2.jpg" alt="Naghma Podcast Studio — armchair, cello and fireplace detail" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open Naghma Podcast Studio gallery, image 3 of 3">
+              <img src="images/naghma-3.jpg" alt="Naghma Podcast Studio — recording corner with shelving and round table" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">05</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Commercial · Studio</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">Naghma Podcast Studio</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">Acoustically refined studio setup with classic warm molding and cozy lighting.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project reveal" data-category="commercial">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open Phonebooth Office gallery, image 1 of 3">
+              <img src="images/office-1.jpg" alt="Phonebooth Office — glazed colour-coded phone booths" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open Phonebooth Office gallery, image 2 of 3">
+              <img src="images/office-2.jpg" alt="Phonebooth Office — open-plan desks under a linear ceiling grid" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open Phonebooth Office gallery, image 3 of 3">
+              <img src="images/office-3.jpg" alt="Phonebooth Office — informal lounge with feature wall" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">06</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Commercial · Office</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">Phonebooth Office</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">Color-coded phone booths and open desks that keep teams focused.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <article class="project reveal" data-category="residential">
+            <div class="project-grid">
+              <div class="project-media">
+                <div class="mosaic">
+            <button type="button" class="tile tile-main" data-index="0" aria-label="Open Private Residence &amp; Lounge gallery, image 1 of 3">
+              <img src="images/res-1.jpg" alt="Private residence — curved sofa, sculptural chair and illuminated bookshelves" loading="lazy" decoding="async" />
+              <span class="badge"><i></i>3 views</span><span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-a" data-index="1" aria-label="Open Private Residence &amp; Lounge gallery, image 2 of 3">
+              <img src="images/res-2.jpg" alt="Private residence — timber media wall with stone ledge and chandelier" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <button type="button" class="tile tile-b" data-index="2" aria-label="Open Private Residence &amp; Lounge gallery, image 3 of 3">
+              <img src="images/res-3.jpg" alt="Private residence — lounge chair facing the media wall and study desk" loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+                </div>
+              </div>
+              <div class="project-info">
+                <span class="num font-serif">07</span>
+                <p class="text-[10px] uppercase tracking-[.3em] text-bronze mt-3">Residential · Villa</p>
+                <h3 class="font-serif text-3xl sm:text-4xl mt-2 leading-tight">Private Residence &amp; Lounge</h3>
+                <p class="text-sm text-ink/70 mt-4 leading-relaxed max-w-sm">Tactile wood paneling, custom media walls, and organic curved sofas.</p>
+                <button type="button" class="open-gallery" data-index="0">View gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" class="py-24 lg:py-32 bg-ink text-cream">
+      <div class="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-12 gap-14">
+        <div class="lg:col-span-5">
+          <p class="reveal eyebrow !text-bronze">Contact &amp; Location</p>
+          <h2 class="reveal d1 mt-6 font-serif text-4xl sm:text-5xl leading-[1.05]">Let’s design the place you’ll <span class="italic text-bronze">love</span> coming home to.</h2>
+          <address class="reveal d2 mt-10 not-italic space-y-4 text-[15px] text-cream/80">
+            <p><span class="block text-[11px] uppercase tracking-[.28em] text-bronze mb-1">Studio</span>King Hussein Business Park, Amman, Jordan</p>
+            <p><span class="block text-[11px] uppercase tracking-[.28em] text-bronze mb-1">Phone</span>+962 7 8834 8077</p>
+            <p><span class="block text-[11px] uppercase tracking-[.28em] text-bronze mb-1">Email</span>Contact@twinsinteriordesign.com</p>
+          </address>
+        </div>
+
+        <form class="reveal d2 lg:col-span-7 space-y-7">
+          <div class="grid sm:grid-cols-2 gap-7">
+            <input placeholder="Name" class="w-full bg-transparent border-b border-cream/30 py-3 text-cream outline-none focus:border-bronze" />
+            <input placeholder="Email" type="email" class="w-full bg-transparent border-b border-cream/30 py-3 text-cream outline-none focus:border-bronze" />
+          </div>
+          <textarea placeholder="Tell us about your space" rows="4" class="w-full bg-transparent border-b border-cream/30 py-3 text-cream outline-none focus:border-bronze resize-none"></textarea>
+          <button type="button" class="bg-bronze text-ink text-[12px] uppercase tracking-[.22em] px-10 py-4 hover:bg-cream transition-colors duration-500">Request consultation</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-cream border-t border-bronze/40 py-10 text-center text-xs text-ink/60">
+    <p>© Twins Interior Design. All rights reserved.</p>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <dialog id="lb" class="lb" aria-label="Project gallery">
+    <div class="lb-stage" id="lb-stage">
+      <button type="button" id="lb-close" class="lb-btn" aria-label="Close gallery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5m6-6-6 6 6 6"/></svg></button>
+      <img id="lb-img" src="" alt="" draggable="false" />
+      <button type="button" id="lb-next" class="lb-btn" aria-label="Next image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+    </div>
+    <div class="lb-bar">
+      <div><p id="lb-title" class="font-serif text-2xl"></p><p id="lb-count" class="text-[11px] uppercase tracking-[.3em] text-bronze mt-1" aria-live="polite"></p></div>
+      <div id="lb-thumbs" class="lb-thumbs"></div>
+    </div>
+  </dialog>
+
+  <script>
+    // Animations reveal
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Portfolio filtering — keeps the zig-zag layout and numbering in order
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projects = [...document.querySelectorAll('.project')];
+
+    function layoutRows() {
+      projects.filter(p => !p.classList.contains('is-hidden')).forEach((p, i) => {
+        p.classList.toggle('flip', i % 2 === 1);
+        p.querySelector('.num').textContent = String(i + 1).padStart(2, '0');
+      });
+    }
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        projects.forEach(p => {
+          const show = filter === 'all' || p.dataset.category === filter;
+          p.classList.toggle('is-hidden', !show);
+          p.classList.remove('fade-in');
+          if (show) { void p.offsetWidth; p.classList.add('in', 'fade-in'); }
+        });
+        layoutRows();
+      });
+    });
+    layoutRows();
+
+    // Lightbox gallery: arrows / keyboard / swipe, smooth cross-fade between images
+    const lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img');
+    const lbTitle = document.getElementById('lb-title'), lbCount = document.getElementById('lb-count');
+    const lbThumbs = document.getElementById('lb-thumbs'), lbStage = document.getElementById('lb-stage');
+    let gallery = [], cur = 0, token = 0;
+
+    function preload(src) { const i = new Image(); i.src = src; }
+
+    async function show(i, dir = 0) {
+      const n = gallery.length, next = (i + n) % n, my = ++token;
+      const item = gallery[next];
+      if (dir) {
+        lbImg.classList.add('out'); lbImg.style.setProperty('--dx', (-dir * 28) + 'px');
+        const pre = new Image(); pre.src = item.src;
+        await Promise.all([pre.decode().catch(() => {}), new Promise(r => setTimeout(r, 200))]);
+        if (my !== token) return;
+        lbImg.style.transition = 'none'; lbImg.style.setProperty('--dx', (dir * 28) + 'px');
+        lbImg.src = item.src; lbImg.alt = item.alt; void lbImg.offsetWidth;
+        lbImg.style.transition = ''; lbImg.classList.remove('out');
+      } else { lbImg.src = item.src; lbImg.alt = item.alt; lbImg.classList.remove('out'); }
+      cur = next;
+      lbCount.textContent = `${String(cur + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
+      [...lbThumbs.children].forEach((t, k) => t.classList.toggle('active', k === cur));
+      preload(gallery[(cur + 1) % n].src); preload(gallery[(cur - 1 + n) % n].src);
+    }
+
+    function openGallery(project, index) {
+      gallery = [...project.querySelectorAll('.tile img')].map(im => ({ src: im.getAttribute('src'), alt: im.alt }));
+      lbTitle.textContent = project.querySelector('h3').textContent;
+      lbThumbs.innerHTML = '';
+      gallery.forEach((g, k) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'lb-thumb'; b.setAttribute('aria-label', 'Show image ' + (k + 1));
+        b.innerHTML = `<img src="${g.src}" alt="" />`;
+        b.addEventListener('click', () => k !== cur && show(k, k > cur ? 1 : -1));
+        lbThumbs.appendChild(b);
+      });
+      document.documentElement.classList.add('lb-open');
+      lb.showModal();
+      show(index, 0);
+    }
+
+    document.querySelectorAll('.project').forEach(p => {
+      p.addEventListener('click', e => {
+        const t = e.target.closest('.tile, .open-gallery');
+        if (t) openGallery(p, +t.dataset.index || 0);
+      });
+    });
+    document.getElementById('lb-close').addEventListener('click', () => lb.close());
+    document.getElementById('lb-prev').addEventListener('click', () => show(cur - 1, -1));
+    document.getElementById('lb-next').addEventListener('click', () => show(cur + 1, 1));
+    lb.addEventListener('close', () => document.documentElement.classList.remove('lb-open'));
+    lbStage.addEventListener('click', e => { if (e.target === lbStage) lb.close(); });
+    document.addEventListener('keydown', e => {
+      if (!lb.open) return;
+      if (e.key === 'ArrowRight') show(cur + 1, 1);
+      if (e.key === 'ArrowLeft') show(cur - 1, -1);
+    });
+    let x0 = null;
+    lbStage.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    lbStage.addEventListener('touchend', e => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 45) show(cur + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+    });
+  </script>
+</body>
+</html>
